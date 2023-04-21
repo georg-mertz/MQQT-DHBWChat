@@ -1,5 +1,6 @@
 package Chat;
 
+import MQTTCom.Log;
 import MQTTCom.Receiver;
 import MQTTCom.Transmitter;
 
@@ -10,12 +11,15 @@ public class Chat implements IChat {
     private final String broker;
     private final String defaultTopic;
     private final String sender;
-    
+
+
+    private Log connectionLog;
     private Receiver receiver;
 
-    public Chat() {
+    public Chat(Log connectionLog) {
         broker = Configuration.instance.Broker;
         defaultTopic = Configuration.instance.defaultTopic;
+        this.connectionLog = connectionLog;
 
         System.out.print("Name: ");
         Scanner scanner = new Scanner(System.in);
@@ -30,7 +34,7 @@ public class Chat implements IChat {
         System.out.println("To send a message, just type it into the console and hit ENTER.");
 
         // Start receiver threat
-        receiver = new Receiver(broker, defaultTopic, this);
+        receiver = new Receiver(broker, defaultTopic, this, connectionLog);
         receiver.run();
         
         // Scan for message
@@ -48,7 +52,7 @@ public class Chat implements IChat {
     }
 
     private void send(String message) {
-        Transmitter transmitter = new Transmitter(broker, defaultTopic, sender);
+        Transmitter transmitter = new Transmitter(broker, defaultTopic, sender, connectionLog);
         transmitter.connect();
         transmitter.sendMessage(message);
         transmitter.disconnect();

@@ -1,8 +1,7 @@
 import Chat.Chat;
+import MQTTCom.Log;
 import MQTTCom.Receiver;
 import MQTTCom.Transmitter;
-
-import java.util.Scanner;
 
 public class Main {
 
@@ -11,9 +10,13 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        Chat chat = new Chat();
+        Log connectionLog = new Log();
+        Chat chat = new Chat(connectionLog);
         chat.start();
         chat.stop();
+
+        System.out.println("Log:");
+        connectionLog.show();
 
         // Simulate Communication
         //Main main = new Main();
@@ -22,10 +25,11 @@ public class Main {
     }
 
     private void simulateCommunication(Chat chat) throws InterruptedException {
-        Receiver receiver = new Receiver("10.50.12.150","/aichat/default", chat);
+        Log log = new Log();
+        Receiver receiver = new Receiver("10.50.12.150","/aichat/default", chat, log);
         Thread receiverThread = new Thread(receiver);               //Dank Async Task in run() wäre ein extra Thread nicht zwingend notwendig.
         receiver.run();
-        Transmitter transmitter = new Transmitter("10.50.12.150","/aichat/default","SenderName");
+        Transmitter transmitter = new Transmitter("10.50.12.150","/aichat/default","SenderName", log);
         System.out.println("Connect");
         System.out.println(transmitter.connect());
         System.out.println("Send Message");
@@ -34,5 +38,8 @@ public class Main {
         System.out.println("Disconnect");
         System.out.println(transmitter.disconnect());
         receiver.stop();
+
+        System.out.println("Log:");
+        log.show();
     }
 }

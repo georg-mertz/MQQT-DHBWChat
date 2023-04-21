@@ -18,21 +18,21 @@ public class Transmitter {
     private final String stopmessage = "MQTT Chat-Client stopped";
     private final String lastWillMessage = "MQTT Chat.Chat-Client lost connection";
     private Mqtt5BlockingClient client;
+    private final Log log;
 
 
-    public Transmitter(String broker, String defaultTopic, String sender){
-
+    public Transmitter(String broker, String defaultTopic, String sender, Log log){
+        this.log = log;
         this.broker = broker;
         this.defaultTopic = defaultTopic;
         this.sender = sender;
         this.clientID = generateGUID();
         connect();
         sendStartMessage();
-
     }
     public boolean connect(){
         try{
-            System.out.println("Trying to Connect ...");
+            log.log("Trying to Connect ...");
             client = Mqtt5Client.builder().identifier(clientID).serverHost(broker).buildBlocking();
             client.connectWith()
                     .willPublish()

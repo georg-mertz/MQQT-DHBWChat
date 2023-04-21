@@ -14,21 +14,23 @@ public class Receiver implements Runnable{
     private Mqtt5BlockingClient client;
 
     private final Chat chat;
+    private final Log log;
 
-    public Receiver(String broker, String defaultTopic, Chat chat) {
+    public Receiver(String broker, String defaultTopic, Chat chat, Log log) {
         this.broker = broker;
         default_topic = defaultTopic;
         this.chat = chat;
+        this.log = log;
     }
 
 
     public void run() {
         if(!connect()){
-            System.out.println("Receiver connection failed");
+            log.log("Receiver connection failed");
             return;
         }
         if(!subscribe()){
-            System.out.println("Receiver subscribe failed");
+            log.log("Receiver subscribe failed");
             return;
         }
 
@@ -41,7 +43,7 @@ public class Receiver implements Runnable{
                     if(isMessageValid(message)){
                         chat.parseAndDisplay("Received valid message: \n"+message);
                     }else{
-                        System.out.println("Received invalid message: \n"+message);
+                        log.log("Received invalid message: \n"+message);
                     }
                 }).
                 send();
