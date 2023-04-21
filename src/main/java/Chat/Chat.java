@@ -47,8 +47,13 @@ public class Chat implements IChat {
         receiver.stop();
     }
 
-    public void parseAndDisplay(String message) {
-        System.out.println(message);
+    public void parseAndDisplay(String json) {
+        try {
+            Message message = new Message(json);
+            System.out.println(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void send(String message) {

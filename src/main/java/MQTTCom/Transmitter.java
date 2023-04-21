@@ -51,7 +51,12 @@ public class Transmitter {
 
         String JSONMessage = messageToJSONString(message);
         try{
-            client.publishWith().topic(defaultTopic).qos(MqttQos.AT_LEAST_ONCE).payload(JSONMessage.getBytes(StandardCharsets.UTF_8)).send();
+            client.publishWith()
+                    .topic(defaultTopic)
+                    .qos(MqttQos.AT_LEAST_ONCE)
+                    .payload(JSONMessage.getBytes(StandardCharsets.UTF_8))
+                    .contentType("application/json")
+                    .send();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -59,7 +64,11 @@ public class Transmitter {
     }
 
     public boolean disconnect(){
-        client.publishWith().topic(clientStateTopic).qos(MqttQos.AT_LEAST_ONCE).payload(stopmessage.getBytes(StandardCharsets.UTF_8)).send();
+        client.publishWith()
+                .topic(clientStateTopic)
+                .qos(MqttQos.AT_LEAST_ONCE).payload(stopmessage.getBytes(StandardCharsets.UTF_8))
+                .contentType("application/json")
+                .send();
         client.disconnect();
         return true;
     }
@@ -77,7 +86,12 @@ public class Transmitter {
         return UUID.randomUUID().toString();
     }
     private void sendStartMessage(){
-        client.publishWith().topic(clientStateTopic).qos(MqttQos.AT_LEAST_ONCE).payload(startMessage.getBytes(StandardCharsets.UTF_8)).send();
+        client.publishWith()
+                .topic(clientStateTopic)
+                .qos(MqttQos.AT_LEAST_ONCE)
+                .payload(startMessage.getBytes(StandardCharsets.UTF_8))
+                .contentType("application/json")
+                .send();
     }
 
 

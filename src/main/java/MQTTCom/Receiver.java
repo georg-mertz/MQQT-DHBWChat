@@ -41,7 +41,7 @@ public class Receiver implements Runnable{
                 callback(mqtt5Publish -> {
                     String message = new String(mqtt5Publish.getPayloadAsBytes(),StandardCharsets.UTF_8);
                     if(isMessageValid(message)){
-                        chat.parseAndDisplay("Received valid message: \n"+message);
+                        chat.parseAndDisplay(message);
                     }else{
                         log.log("Received invalid message: \n"+message);
                     }

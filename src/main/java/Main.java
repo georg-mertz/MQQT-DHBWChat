@@ -5,9 +5,6 @@ import MQTTCom.Transmitter;
 
 public class Main {
 
-    private final String broker = "10.50.12.150";
-    private final String defaultTopic = "/aichat/default";
-
     public static void main(String[] args) throws InterruptedException {
 
         Log connectionLog = new Log();
