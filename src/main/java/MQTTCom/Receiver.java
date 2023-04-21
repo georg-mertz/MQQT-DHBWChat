@@ -1,24 +1,24 @@
 package MQTTCom;
 
-import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
+import Chat.Chat;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
-import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 
 public class Receiver implements Runnable{
     private final String broker;
     private final String default_topic;
     private Mqtt5BlockingClient client;
 
-    public Receiver(String broker, String defaultTopic) {
+    private final Chat chat;
+
+    public Receiver(String broker, String defaultTopic, Chat chat) {
         this.broker = broker;
         default_topic = defaultTopic;
+        this.chat = chat;
     }
 
 
@@ -39,7 +39,7 @@ public class Receiver implements Runnable{
                 callback(mqtt5Publish -> {
                     String message = new String(mqtt5Publish.getPayloadAsBytes(),StandardCharsets.UTF_8);
                     if(isMessageValid(message)){
-                        System.out.println("Received valid message: \n"+message);
+                        chat.parseAndDisplay("Received valid message: \n"+message);
                     }else{
                         System.out.println("Received invalid message: \n"+message);
                     }

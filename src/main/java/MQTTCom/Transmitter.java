@@ -16,7 +16,7 @@ public class Transmitter {
     private final String clientStateTopic = "/aichat/clientstate";
     private final String startMessage = "MQTT Chat-Client started";
     private final String stopmessage = "MQTT Chat-Client stopped";
-    private final String lastWillMessage = "MQTT Chat-Client lost connection";
+    private final String lastWillMessage = "MQTT Chat.Chat-Client lost connection";
     private Mqtt5BlockingClient client;
 
 
