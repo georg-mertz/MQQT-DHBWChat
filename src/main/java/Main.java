@@ -10,6 +10,10 @@ public class Main {
         Log connectionLog = new Log();
         Chat chat = new Chat(connectionLog);
         chat.start();
+
+        while (chat.checkIfMessageAvailable()) {
+        }
+
         chat.stop();
 
         System.out.println("Log:");

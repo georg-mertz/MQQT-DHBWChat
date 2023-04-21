@@ -4,6 +4,7 @@ import MQTTCom.Log;
 import MQTTCom.Receiver;
 import MQTTCom.Transmitter;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Chat implements IChat {
@@ -31,16 +32,25 @@ public class Chat implements IChat {
     }
 
     public void start() {
-        System.out.println("To send a message, just type it into the console and hit ENTER.");
-
         // Start receiver threat
         receiver = new Receiver(broker, defaultTopic, this, connectionLog);
         receiver.run();
-        
+
+        System.out.println("To send a message, just type it into the console and hit ENTER.");
+    }
+
+    public boolean checkIfMessageAvailable() {
         // Scan for message
         Scanner scanner = new Scanner(System.in);
         String message = scanner.nextLine();
+
+        if (Objects.equals(message, "q")) {
+            return false;
+        }
+
         send(message);
+
+        return true;
     }
     
     public void stop() {
