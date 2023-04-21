@@ -8,7 +8,7 @@ public class Main {
     }
     private void simulateCommunication() throws InterruptedException {
         Receiver receiver = new Receiver("10.50.12.150","/aichat/default");
-        Thread receiverThread = new Thread(receiver);
+        Thread receiverThread = new Thread(receiver);               //Dank Async Task in run() wäre ein extra Thread nicht zwingend notwendig.
         receiver.run();
         Transmitter transmitter = new Transmitter("10.50.12.150","/aichat/default","SenderName");
         System.out.println("Connect");
