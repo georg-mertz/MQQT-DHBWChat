@@ -9,16 +9,17 @@ public class Chat implements IChat {
     private final String broker;
     private final String defaultTopic;
     private final String sender;
-
+    private final IMessageDisplay messageDisplay;
 
     private final Log connectionLog;
     private Receiver receiver;
 
-    public Chat(Log connectionLog, String sender) {
+    public Chat(Log connectionLog, String sender, IMessageDisplay messageDisplay) {
         broker = Configuration.instance.Broker;
         defaultTopic = Configuration.instance.defaultTopic;
         this.connectionLog = connectionLog;
         this.sender = sender;
+        this.messageDisplay = messageDisplay;
 
         if(sender == null || sender.trim().isEmpty()) {
             throw new IllegalArgumentException("Sender cannot be null or empty!");
@@ -27,7 +28,7 @@ public class Chat implements IChat {
 
     public void start() {
         // Start receiver threat
-        receiver = new Receiver(broker, defaultTopic, this, connectionLog);
+        receiver = new Receiver(broker, defaultTopic, this, messageDisplay, connectionLog);
         receiver.run();
 
         System.out.println("To send a message, just type it into the console and hit ENTER.");
@@ -42,15 +43,6 @@ public class Chat implements IChat {
     
     public void stop() {
         receiver.stop();
-    }
-
-    public void parseAndDisplay(String json) {
-        try {
-            Message message = new Message(json);
-            System.out.println(message);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
 

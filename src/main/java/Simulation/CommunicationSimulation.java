@@ -4,11 +4,12 @@ import Chat.Chat;
 import MQTTCom.Log;
 import MQTTCom.Receiver;
 import MQTTCom.Transmitter;
+import Chat.IMessageDisplay;
 
 public class CommunicationSimulation {
-    public void simulateCommunication(Chat chat) throws InterruptedException {
+    public void simulateCommunication(Chat chat, IMessageDisplay messageDisplay) throws InterruptedException {
         Log log = new Log();
-        Receiver receiver = new Receiver("10.50.12.150","/aichat/default", chat, log);
+        Receiver receiver = new Receiver("10.50.12.150","/aichat/default", chat, messageDisplay, log);
         receiver.run();
         Transmitter transmitter = new Transmitter("10.50.12.150","/aichat/default","SenderName", log);
         System.out.println("Connect");

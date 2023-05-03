@@ -1,6 +1,8 @@
 package MQTTCom;
 
 import Chat.Chat;
+import Chat.IMessageDisplay;
+import Chat.Message;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
@@ -14,12 +16,14 @@ public class Receiver implements Runnable{
     private Mqtt5BlockingClient client;
 
     private final Chat chat;
+    private final IMessageDisplay messageDisplay;
     private final Log log;
 
-    public Receiver(String broker, String defaultTopic, Chat chat, Log log) {
+    public Receiver(String broker, String defaultTopic, Chat chat, IMessageDisplay messageDisplay, Log log) {
         this.broker = broker;
         default_topic = defaultTopic;
         this.chat = chat;
+        this.messageDisplay = messageDisplay;
         this.log = log;
     }
 
@@ -39,11 +43,16 @@ public class Receiver implements Runnable{
                 topicFilter(default_topic).
                 qos(MqttQos.AT_LEAST_ONCE).
                 callback(mqtt5Publish -> {
-                    String message = new String(mqtt5Publish.getPayloadAsBytes(),StandardCharsets.UTF_8);
-                    if(isMessageValid(message)){
-                        chat.parseAndDisplay(message);
+                    String json = new String(mqtt5Publish.getPayloadAsBytes(),StandardCharsets.UTF_8);
+                    if(isMessageValid(json)){
+                        try {
+                            Message message = new Message(json);
+                            messageDisplay.display(message);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     }else{
-                        log.log("Received invalid message: \n"+message);
+                        log.log("Received invalid json: \n"+json);
                     }
                 }).
                 send();
