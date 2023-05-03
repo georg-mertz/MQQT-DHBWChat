@@ -16,7 +16,7 @@ public class Message {
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, String> properties = objectMapper.readValue(json, new TypeReference<>() {{ }});
+            Map<String, String> properties = objectMapper.readValue(json, new TypeReference<>() {});
 
             if (!properties.containsKey("sender") || !properties.containsKey("text") || !properties.containsKey("clientId") || !properties.containsKey("topic")) {
                 throw new Exception("JSON is invalid");

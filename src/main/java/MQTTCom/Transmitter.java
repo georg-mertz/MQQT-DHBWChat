@@ -57,7 +57,7 @@ public class Transmitter {
                     .payload(JSONMessage.getBytes(StandardCharsets.UTF_8))
                     .contentType("application/json")
                     .send();
-        }catch (Exception e){
+        } catch (Exception e){
             e.printStackTrace();
         }
         return false;

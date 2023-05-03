@@ -4,7 +4,7 @@ import java.util.Stack;
 
 public class Log {
 
-    private Stack<String> logs;
+    private final Stack<String> logs;
 
     public Log() {
         logs = new Stack<>();

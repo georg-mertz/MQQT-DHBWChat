@@ -1,7 +1,5 @@
 import Chat.Chat;
 import MQTTCom.Log;
-import MQTTCom.Receiver;
-import MQTTCom.Transmitter;
 
 import java.util.Objects;
 import java.util.Scanner;

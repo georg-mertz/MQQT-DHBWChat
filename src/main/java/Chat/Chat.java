@@ -11,7 +11,7 @@ public class Chat implements IChat {
     private final String sender;
 
 
-    private Log connectionLog;
+    private final Log connectionLog;
     private Receiver receiver;
 
     public Chat(Log connectionLog, String sender) {
