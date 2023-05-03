@@ -66,7 +66,8 @@ public class Transmitter {
     public boolean disconnect(){
         client.publishWith()
                 .topic(clientStateTopic)
-                .qos(MqttQos.AT_LEAST_ONCE).payload(stopmessage.getBytes(StandardCharsets.UTF_8))
+                .qos(MqttQos.AT_LEAST_ONCE)
+                .payload(stopmessage.getBytes(StandardCharsets.UTF_8))
                 .contentType("application/json")
                 .send();
         client.disconnect();
@@ -93,6 +94,4 @@ public class Transmitter {
                 .contentType("application/json")
                 .send();
     }
-
-
 }

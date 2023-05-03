@@ -2,6 +2,6 @@ package Chat;
 
 public interface IChat {
     void start();
-    boolean checkIfMessageAvailable();
+    void send(String message);
     void stop();
 }

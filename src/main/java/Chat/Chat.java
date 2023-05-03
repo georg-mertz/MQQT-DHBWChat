@@ -4,9 +4,6 @@ import MQTTCom.Log;
 import MQTTCom.Receiver;
 import MQTTCom.Transmitter;
 
-import java.util.Objects;
-import java.util.Scanner;
-
 public class Chat implements IChat {
 
     private final String broker;
@@ -17,14 +14,11 @@ public class Chat implements IChat {
     private Log connectionLog;
     private Receiver receiver;
 
-    public Chat(Log connectionLog) {
+    public Chat(Log connectionLog, String sender) {
         broker = Configuration.instance.Broker;
         defaultTopic = Configuration.instance.defaultTopic;
         this.connectionLog = connectionLog;
-
-        System.out.print("Name: ");
-        Scanner scanner = new Scanner(System.in);
-        sender = scanner.nextLine();
+        this.sender = sender;
 
         if(sender == null || sender.trim().isEmpty()) {
             throw new IllegalArgumentException("Sender cannot be null or empty!");
@@ -39,18 +33,11 @@ public class Chat implements IChat {
         System.out.println("To send a message, just type it into the console and hit ENTER.");
     }
 
-    public boolean checkIfMessageAvailable() {
-        // Scan for message
-        Scanner scanner = new Scanner(System.in);
-        String message = scanner.nextLine();
-
-        if (Objects.equals(message, "q")) {
-            return false;
-        }
-
-        send(message);
-
-        return true;
+    public void send(String message) {
+        Transmitter transmitter = new Transmitter(broker, defaultTopic, sender, connectionLog);
+        transmitter.connect();
+        transmitter.sendMessage(message);
+        transmitter.disconnect();
     }
     
     public void stop() {
@@ -64,13 +51,6 @@ public class Chat implements IChat {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void send(String message) {
-        Transmitter transmitter = new Transmitter(broker, defaultTopic, sender, connectionLog);
-        transmitter.connect();
-        transmitter.sendMessage(message);
-        transmitter.disconnect();
     }
 }
 

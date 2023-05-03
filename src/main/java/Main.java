@@ -3,15 +3,31 @@ import MQTTCom.Log;
 import MQTTCom.Receiver;
 import MQTTCom.Transmitter;
 
+import java.util.Objects;
+import java.util.Scanner;
+
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
         Log connectionLog = new Log();
-        Chat chat = new Chat(connectionLog);
+
+        System.out.print("Name: ");
+        Scanner scanner = new Scanner(System.in);
+        String sender = scanner.nextLine();
+
+        Chat chat = new Chat(connectionLog, sender);
         chat.start();
 
-        while (chat.checkIfMessageAvailable()) {
+        boolean quitChat = false;
+        while (!quitChat) {
+            String message = scanner.nextLine();
+
+            if (Objects.equals(message, "q")) {
+                quitChat = true;
+            } else {
+                chat.send(message);
+            }
         }
 
         chat.stop();
@@ -19,28 +35,7 @@ public class Main {
         System.out.println("Log:");
         connectionLog.show();
 
-        // Simulate Communication
-        //Main main = new Main();
-        //main.simulateCommunication(chat);
 
-    }
 
-    private void simulateCommunication(Chat chat) throws InterruptedException {
-        Log log = new Log();
-        Receiver receiver = new Receiver("10.50.12.150","/aichat/default", chat, log);
-        Thread receiverThread = new Thread(receiver);               //Dank Async Task in run() wäre ein extra Thread nicht zwingend notwendig.
-        receiver.run();
-        Transmitter transmitter = new Transmitter("10.50.12.150","/aichat/default","SenderName", log);
-        System.out.println("Connect");
-        System.out.println(transmitter.connect());
-        System.out.println("Send Message");
-        System.out.println(transmitter.sendMessage("TestMessage"));
-        Thread.sleep(20000);
-        System.out.println("Disconnect");
-        System.out.println(transmitter.disconnect());
-        receiver.stop();
-
-        System.out.println("Log:");
-        log.show();
     }
 }
