@@ -36,7 +36,5 @@ public class Main {
         System.out.println("Log:");
         connectionLog.show();
 
-
-
     }
 }

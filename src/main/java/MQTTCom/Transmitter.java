@@ -3,6 +3,7 @@ package MQTTCom;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
@@ -55,6 +56,7 @@ public class Transmitter {
                     .topic(defaultTopic)
                     .qos(MqttQos.AT_LEAST_ONCE)
                     .payload(JSONMessage.getBytes(StandardCharsets.UTF_8))
+                    .payloadFormatIndicator(Mqtt5PayloadFormatIndicator.UTF_8)
                     .contentType("application/json")
                     .send();
         } catch (Exception e){
@@ -91,6 +93,7 @@ public class Transmitter {
                 .topic(clientStateTopic)
                 .qos(MqttQos.AT_LEAST_ONCE)
                 .payload(startMessage.getBytes(StandardCharsets.UTF_8))
+                .payloadFormatIndicator(Mqtt5PayloadFormatIndicator.UTF_8)
                 .contentType("application/json")
                 .send();
     }
