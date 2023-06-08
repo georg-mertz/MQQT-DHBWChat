@@ -3,6 +3,7 @@ package MQTTCom;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
@@ -16,23 +17,23 @@ public class Transmitter {
     private final String clientStateTopic = "/aichat/clientstate";
     private final String startMessage = "MQTT Chat-Client started";
     private final String stopmessage = "MQTT Chat-Client stopped";
-    private final String lastWillMessage = "MQTT Chat-Client lost connection";
+    private final String lastWillMessage = "MQTT Chat.Chat-Client lost connection";
     private Mqtt5BlockingClient client;
+    private final Log log;
 
 
-    public Transmitter(String broker, String defaultTopic, String sender){
-
+    public Transmitter(String broker, String defaultTopic, String sender, Log log){
+        this.log = log;
         this.broker = broker;
         this.defaultTopic = defaultTopic;
         this.sender = sender;
         this.clientID = generateGUID();
         connect();
         sendStartMessage();
-
     }
     public boolean connect(){
         try{
-            System.out.println("Trying to Connect ...");
+            log.log("Trying to Connect ...");
             client = Mqtt5Client.builder().identifier(clientID).serverHost(broker).buildBlocking();
             client.connectWith()
                     .willPublish()
@@ -51,15 +52,26 @@ public class Transmitter {
 
         String JSONMessage = messageToJSONString(message);
         try{
-            client.publishWith().topic(defaultTopic).qos(MqttQos.AT_LEAST_ONCE).payload(JSONMessage.getBytes(StandardCharsets.UTF_8)).send();
-        }catch (Exception e){
+            client.publishWith()
+                    .topic(defaultTopic)
+                    .qos(MqttQos.AT_LEAST_ONCE)
+                    .payload(JSONMessage.getBytes(StandardCharsets.UTF_8))
+                    .payloadFormatIndicator(Mqtt5PayloadFormatIndicator.UTF_8)
+                    .contentType("application/json")
+                    .send();
+        } catch (Exception e){
             e.printStackTrace();
         }
         return false;
     }
 
     public boolean disconnect(){
-        client.publishWith().topic(clientStateTopic).qos(MqttQos.AT_LEAST_ONCE).payload(stopmessage.getBytes(StandardCharsets.UTF_8)).send();
+        client.publishWith()
+                .topic(clientStateTopic)
+                .qos(MqttQos.AT_LEAST_ONCE)
+                .payload(stopmessage.getBytes(StandardCharsets.UTF_8))
+                .contentType("application/json")
+                .send();
         client.disconnect();
         return true;
     }
@@ -77,8 +89,12 @@ public class Transmitter {
         return UUID.randomUUID().toString();
     }
     private void sendStartMessage(){
-        client.publishWith().topic(clientStateTopic).qos(MqttQos.AT_LEAST_ONCE).payload(startMessage.getBytes(StandardCharsets.UTF_8)).send();
+        client.publishWith()
+                .topic(clientStateTopic)
+                .qos(MqttQos.AT_LEAST_ONCE)
+                .payload(startMessage.getBytes(StandardCharsets.UTF_8))
+                .payloadFormatIndicator(Mqtt5PayloadFormatIndicator.UTF_8)
+                .contentType("application/json")
+                .send();
     }
-
-
 }

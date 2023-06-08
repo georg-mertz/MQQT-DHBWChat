@@ -1,23 +1,40 @@
-import MQTTCom.Receiver;
-import MQTTCom.Transmitter;
+import Chat.Chat;
+import Chat.IMessageDisplay;
+import Chat.MessageDisplayConsole;
+import MQTTCom.Log;
+
+import java.util.Objects;
+import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
-        Main main = new Main();
-        main.simulateCommunication();
-    }
-    private void simulateCommunication() throws InterruptedException {
-        Receiver receiver = new Receiver("10.50.12.150","/aichat/default");
-        Thread receiverThread = new Thread(receiver);               //Dank Async Task in run() wäre ein extra Thread nicht zwingend notwendig.
-        receiver.run();
-        Transmitter transmitter = new Transmitter("10.50.12.150","/aichat/default","SenderName");
-        System.out.println("Connect");
-        System.out.println(transmitter.connect());
-        System.out.println("Send Message");
-        System.out.println(transmitter.sendMessage("TestMessage"));
-        Thread.sleep(20000);
-        System.out.println("Disconnect");
-        System.out.println(transmitter.disconnect());
-        receiver.stop();
+
+    public static void main(String[] args) {
+
+        Log connectionLog = new Log();
+        IMessageDisplay messageDisplay = new MessageDisplayConsole();
+
+        System.out.print("Name: ");
+        Scanner scanner = new Scanner(System.in);
+        String sender = scanner.nextLine();
+
+        Chat chat = new Chat(connectionLog, sender, messageDisplay);
+        chat.start();
+
+        boolean quitChat = false;
+        while (!quitChat) {
+            String message = scanner.nextLine();
+
+            if (Objects.equals(message, "q")) {
+                quitChat = true;
+            } else {
+                chat.send(message);
+            }
+        }
+
+        chat.stop();
+
+        System.out.println("Log:");
+        connectionLog.show();
+
     }
 }

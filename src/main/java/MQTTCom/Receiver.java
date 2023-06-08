@@ -1,34 +1,40 @@
 package MQTTCom;
 
-import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
+import Chat.Chat;
+import Chat.IMessageDisplay;
+import Chat.Message;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
-import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 
 public class Receiver implements Runnable{
     private final String broker;
     private final String default_topic;
     private Mqtt5BlockingClient client;
 
-    public Receiver(String broker, String defaultTopic) {
+    private final Chat chat;
+    private final IMessageDisplay messageDisplay;
+    private final Log log;
+
+    public Receiver(String broker, String defaultTopic, Chat chat, IMessageDisplay messageDisplay, Log log) {
         this.broker = broker;
         default_topic = defaultTopic;
+        this.chat = chat;
+        this.messageDisplay = messageDisplay;
+        this.log = log;
     }
 
 
     public void run() {
         if(!connect()){
-            System.out.println("Receiver connection failed");
+            log.log("Receiver connection failed");
             return;
         }
         if(!subscribe()){
-            System.out.println("Receiver subscribe failed");
+            log.log("Receiver subscribe failed");
             return;
         }
 
@@ -37,11 +43,16 @@ public class Receiver implements Runnable{
                 topicFilter(default_topic).
                 qos(MqttQos.AT_LEAST_ONCE).
                 callback(mqtt5Publish -> {
-                    String message = new String(mqtt5Publish.getPayloadAsBytes(),StandardCharsets.UTF_8);
-                    if(isMessageValid(message)){
-                        System.out.println("Received valid message: \n"+message);
+                    String json = new String(mqtt5Publish.getPayloadAsBytes(),StandardCharsets.UTF_8);
+                    if(isMessageValid(json)){
+                        try {
+                            Message message = new Message(json);
+                            messageDisplay.display(message);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     }else{
-                        System.out.println("Received invalid message: \n"+message);
+                        log.log("Received invalid json: \n"+json);
                     }
                 }).
                 send();
